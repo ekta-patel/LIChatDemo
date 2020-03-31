@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.example.chatdemo.R;
@@ -30,6 +31,7 @@ public class GroupChatRoomsFragment extends BaseFragment<FragmentGroupChatBindin
 
     @Override
     protected void initFragment() {
+        navController = NavHostFragment.findNavController(GroupChatRoomsFragment.this);
         viewModel.getChatRooms();
         initAdapter();
         observeData();
