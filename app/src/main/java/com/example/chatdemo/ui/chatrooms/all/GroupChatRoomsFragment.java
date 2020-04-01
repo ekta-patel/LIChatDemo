@@ -45,17 +45,24 @@ public class GroupChatRoomsFragment extends BaseFragment<FragmentGroupChatBindin
     }
 
     private void observeData() {
-        viewModel.getGroupChatResponseLiveData().observe(this, resList -> {
+        viewModel.getGroupChatResponseLiveData().observe(getViewLifecycleOwner(), resList -> {
             if (resList != null) {
                 this.responseList.clear();
                 this.responseList.addAll(resList);
                 adapter.notifyDataSetChanged();
             }
         });
-        viewModel.getJoinChatRoomResponseLiveData().observe(this, joinChatRoomResponse -> {
+        viewModel.getJoinChatRoomResponseLiveData().observe(getViewLifecycleOwner(), joinChatRoomResponse -> {
             if (joinChatRoomResponse != null) {
                 Toast.makeText(getContext(), "Successfully joined!", Toast.LENGTH_LONG).show();
                 navController.navigateUp();
+            }
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
             }
         });
     }

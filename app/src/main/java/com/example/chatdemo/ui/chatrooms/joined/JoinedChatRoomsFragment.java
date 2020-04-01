@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.example.chatdemo.R;
 import com.example.chatdemo.data.models.request.createchatroom.Chatroom;
 import com.example.chatdemo.data.models.request.createchatroom.CreateChatRoomRequest;
+import com.example.chatdemo.data.models.response.createchatroom.CreateChatroomResponse;
 import com.example.chatdemo.data.models.response.joinedgroups.JoinedChatRoomResponse;
 import com.example.chatdemo.databinding.FragmentJoinedGroupChatBinding;
 import com.example.chatdemo.databinding.LayoutDialogCreateroomBinding;
@@ -65,7 +66,7 @@ public class JoinedChatRoomsFragment extends BaseFragment<FragmentJoinedGroupCha
         builder.setView(dialogCreateroomBinding.getRoot())
                 .setPositiveButton("Create", (dialog, id) -> {
                     String chatroomName = dialogCreateroomBinding.getCreateChatroom().getName();
-                    if (!chatroomName.isEmpty()) {
+                    if (!chatroomName.trim().isEmpty()) {
                         CreateChatRoomRequest request = new CreateChatRoomRequest();
                         request.setChatroom(dialogCreateroomBinding.getCreateChatroom());
                         viewModel.createChatRoom(request);
@@ -83,19 +84,29 @@ public class JoinedChatRoomsFragment extends BaseFragment<FragmentJoinedGroupCha
     }
 
     private void observeData() {
-        viewModel.getJoinedChatRoomResponseLiveData().observe(this, resList -> {
+        viewModel.getJoinedChatRoomResponseLiveData().observe(getViewLifecycleOwner(), resList -> {
             if (resList != null) {
                 this.responseList.clear();
                 this.responseList.addAll(resList);
                 adapter.notifyDataSetChanged();
             }
         });
-        viewModel.getCreateChatRoomResponseLiveData().observe(this, createChatroomResponse -> {
+        viewModel.getCreateChatRoomResponseLiveData().observe(getViewLifecycleOwner(), createChatroomResponse -> {
             if (createChatroomResponse != null) {
-                if (createChatroomResponse.getStatus().equalsIgnoreCase("ok")) {
-                    Toast.makeText(getContext(), "Chatroom created successfully", Toast.LENGTH_LONG).show();
-                    viewModel.getJoinedChatRooms();
+                CreateChatroomResponse c = createChatroomResponse.getContentIfNotHandledOrReturnNull();
+                if (c != null) {
+                    if (c.getStatus().equalsIgnoreCase("ok")) {
+                        Toast.makeText(getContext(), "Chatroom created successfully", Toast.LENGTH_LONG).show();
+                        viewModel.getJoinedChatRooms();
+                    }
                 }
+            }
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
             }
         });
     }
@@ -113,5 +124,11 @@ public class JoinedChatRoomsFragment extends BaseFragment<FragmentJoinedGroupCha
         bundle.putString(Constants.BundleKeys.CHATROOM_NAME, data.getName());
         NavDirections directions = HomeFragmentDirections.actionHomeFragmentToMainChatFragment(bundle);
         navController.navigate(directions);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
     }
 }

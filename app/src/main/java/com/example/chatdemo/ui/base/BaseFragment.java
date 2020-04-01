@@ -1,5 +1,6 @@
 package com.example.chatdemo.ui.base;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ public abstract class BaseFragment<T extends ViewDataBinding, V extends ViewMode
     protected T binding;
     protected V viewModel;
     protected View view;
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -25,8 +27,13 @@ public abstract class BaseFragment<T extends ViewDataBinding, V extends ViewMode
         binding = DataBindingUtil.inflate(inflater, inflateView(), container, false);
         viewModel = new ViewModelProvider(this).get(initViewModel());
         view = binding.getRoot();
-        initFragment();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initFragment();
     }
 
     protected abstract Class<V> initViewModel();
@@ -34,4 +41,20 @@ public abstract class BaseFragment<T extends ViewDataBinding, V extends ViewMode
     protected abstract void initFragment();
 
     protected abstract int inflateView();
+
+    protected void showLoader() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(getContext());
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    protected void dismissLoader() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
 }

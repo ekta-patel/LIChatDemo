@@ -22,7 +22,6 @@ import com.example.chatdemo.databinding.FragmentHomeBinding;
 import com.example.chatdemo.ui.base.BaseFragment;
 import com.example.chatdemo.ui.chatrooms.joined.JoinedChatRoomsFragment;
 import com.example.chatdemo.ui.one2onechat.OneToOneChatFragment;
-import com.example.chatdemo.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
     protected void initFragment() {
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setTitle(getString(R.string.app_name));
         navController = NavHostFragment.findNavController(HomeFragment.this);
-        if (AppSharedPrefManager.getToken(Constants.SharedPrefKeys.TOKEN).isEmpty()) {
+        if (TextUtils.isEmpty(AppSharedPrefManager.getToken())) {
             moveToLogin();
         }
         setHasOptionsMenu(true);
@@ -52,10 +51,17 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
     }
 
     private void observeData() {
-        viewModel.getLogoutResponseLiveData().observe(this, s -> {
+        viewModel.getLogoutResponseLiveData().observe(getViewLifecycleOwner(), s -> {
             if (!TextUtils.isEmpty(s) && s.equalsIgnoreCase("success")) {
                 AppSharedPrefManager.clear();
                 moveToLogin();
+            }
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
             }
         });
     }
@@ -120,7 +126,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
 
     private void callLogout() {
         LogoutRequest request = new LogoutRequest();
-        request.setToken(AppSharedPrefManager.getToken(Constants.SharedPrefKeys.TOKEN));
+        request.setToken(AppSharedPrefManager.getToken());
         viewModel.logout(request);
     }
 }

@@ -4,6 +4,7 @@ import com.example.chatdemo.data.models.request.createchatroom.CreateChatRoomReq
 import com.example.chatdemo.data.models.request.login.LoginRequest;
 import com.example.chatdemo.data.models.request.logout.LogoutRequest;
 import com.example.chatdemo.data.models.request.register.RegisterRequestModel;
+import com.example.chatdemo.data.models.response.BaseResponse;
 import com.example.chatdemo.data.models.response.createchatroom.CreateChatroomResponse;
 import com.example.chatdemo.data.models.response.deletechatroom.DeleteChatRoomResponse;
 import com.example.chatdemo.data.models.response.groupchat.GroupChatResponse;
@@ -12,6 +13,7 @@ import com.example.chatdemo.data.models.response.joinedgroups.JoinedChatRoomResp
 import com.example.chatdemo.data.models.response.leavechatroom.LeaveChatroomResponse;
 import com.example.chatdemo.data.models.response.login.LoginResponse;
 import com.example.chatdemo.data.models.response.logout.LogoutResponse;
+import com.example.chatdemo.data.models.response.messages.MessagesResponseModel;
 import com.example.chatdemo.data.models.response.one2onechat.OneToOneChatResponse;
 import com.example.chatdemo.data.models.response.register.RegisterResponse;
 
@@ -55,4 +57,10 @@ public interface ApiService {
 
     @DELETE("chatrooms/{chatroomId}/chatroom_users")
     Call<LeaveChatroomResponse> leaveChatRoom(@Path("chatroomId") int chatRoomId);
+
+    @GET("chatrooms/{chatroomId}")
+    Call<MessagesResponseModel> getChatRoomMessages(@Path("chatroomId") int chatRoomId);
+
+    @GET("direct_messages/{userId}")
+    Call<MessagesResponseModel> getUserMessages(@Path("userId") int userId);
 }

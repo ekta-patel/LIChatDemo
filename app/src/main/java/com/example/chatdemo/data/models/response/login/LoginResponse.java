@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class LoginResponse {
 
+    @SerializedName("user_id")
+    @Expose
+    private int userId;
     @SerializedName("access_token")
     @Expose
     private String accessToken;
@@ -48,5 +51,13 @@ public class LoginResponse {
 
     public void setCreatedAt(int createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

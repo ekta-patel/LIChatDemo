@@ -17,7 +17,7 @@ public class HeaderInterceptor implements Interceptor {
     public Response intercept(@NotNull Chain chain) throws IOException {
         Request original = chain.request();
         Request.Builder requestBuilder = original.newBuilder()
-                .header("Authorization", "bearer " + AppSharedPrefManager.getToken(Constants.SharedPrefKeys.TOKEN))
+                .header("Authorization", "bearer " + AppSharedPrefManager.getToken())
                 .header("Content-Type", "application/json");
         Request request = requestBuilder.build();
         return chain.proceed(request);

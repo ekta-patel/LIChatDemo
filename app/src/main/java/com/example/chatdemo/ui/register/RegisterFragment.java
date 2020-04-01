@@ -37,18 +37,25 @@ public class RegisterFragment extends BaseFragment<FragmentRegisterBinding, Regi
     }
 
     private void observeData() {
-        viewModel.getLoginResponseLiveData().observe(this, registerResponse -> {
+        viewModel.getLoginResponseLiveData().observe(getViewLifecycleOwner(), registerResponse -> {
             if (registerResponse != null)
                 navController.popBackStack();
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
+            }
         });
     }
 
     private boolean isValid() {
         boolean isValid = true;
-        String username = binding.getRegister().getUsername();
-        String email = binding.getRegister().getEmail();
-        String password = binding.getRegister().getPassword();
-        String confirmPassword = binding.getRegister().getPasswordConfirmation();
+        String username = binding.getRegister().getUsername().trim();
+        String email = binding.getRegister().getEmail().trim();
+        String password = binding.getRegister().getPassword().trim();
+        String confirmPassword = binding.getRegister().getPasswordConfirmation().trim();
 
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             isValid = false;

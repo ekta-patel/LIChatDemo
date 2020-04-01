@@ -9,6 +9,7 @@ import com.example.chatdemo.data.models.response.groupchat.GroupChatResponse;
 import com.example.chatdemo.data.models.response.joinchatroom.JoinChatRoomResponse;
 import com.example.chatdemo.data.models.response.joinedgroups.JoinedChatRoomResponse;
 import com.example.chatdemo.data.models.response.leavechatroom.LeaveChatroomResponse;
+import com.example.chatdemo.data.models.response.messages.MessagesResponseModel;
 import com.example.chatdemo.data.models.response.one2onechat.OneToOneChatResponse;
 import com.example.chatdemo.data.remote.ApiClient;
 import com.example.chatdemo.data.remote.ApiService;
@@ -150,4 +151,37 @@ public class ChatRepository {
         return data;
     }
 
+    public MutableLiveData<MessagesResponseModel> getChatRoomMessages(int chatRoomId) {
+        MutableLiveData<MessagesResponseModel> data = new MutableLiveData<>();
+        apiService.getChatRoomMessages(chatRoomId).enqueue(new Callback<MessagesResponseModel>() {
+            @Override
+            public void onResponse(Call<MessagesResponseModel> call, Response<MessagesResponseModel> response) {
+                if (response.isSuccessful())
+                    data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<MessagesResponseModel> call, Throwable t) {
+                data.postValue(null);
+            }
+        });
+        return data;
+    }
+
+    public MutableLiveData<MessagesResponseModel> getUserMessages(int userId) {
+        MutableLiveData<MessagesResponseModel> data = new MutableLiveData<>();
+        apiService.getUserMessages(userId).enqueue(new Callback<MessagesResponseModel>() {
+            @Override
+            public void onResponse(Call<MessagesResponseModel> call, Response<MessagesResponseModel> response) {
+                if (response.isSuccessful())
+                    data.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<MessagesResponseModel> call, Throwable t) {
+                data.postValue(null);
+            }
+        });
+        return data;
+    }
 }

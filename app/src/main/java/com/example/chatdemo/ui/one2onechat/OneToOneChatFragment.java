@@ -49,11 +49,18 @@ public class OneToOneChatFragment extends BaseFragment<FragmentOnetooneChatBindi
     }
 
     private void observeData() {
-        viewModel.getOneToOneChatResponseLiveData().observe(this, resList -> {
+        viewModel.getOneToOneChatResponseLiveData().observe(getViewLifecycleOwner(), resList -> {
             if (resList != null) {
                 this.responseList.clear();
                 this.responseList.addAll(resList);
                 adapter.notifyDataSetChanged();
+            }
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
             }
         });
     }
@@ -72,6 +79,7 @@ public class OneToOneChatFragment extends BaseFragment<FragmentOnetooneChatBindi
     public void onItemClick(View v, OneToOneChatResponse data, int position) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(Constants.BundleKeys.IS_GROUP, false);
+        bundle.putInt(Constants.BundleKeys.OTHER_USER_ID, data.getId());
         bundle.putString(Constants.BundleKeys.CHATROOM_NAME, data.getUsername());
         NavDirections directions = HomeFragmentDirections.actionHomeFragmentToMainChatFragment(bundle);
         navController.navigate(directions);

@@ -38,11 +38,18 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding, LoginViewM
 
     private void observeData() {
 
-        viewModel.getLoginResponseLiveData().observe(LoginFragment.this, loginResponse -> {
+        viewModel.getLoginResponseLiveData().observe(getViewLifecycleOwner(), loginResponse -> {
             if (loginResponse != null) {
-                AppSharedPrefManager.setToken(Constants.SharedPrefKeys.TOKEN, loginResponse.getAccessToken());
+                AppSharedPrefManager.setLoginData(Constants.SharedPrefKeys.LOGIN_RESPONSE, loginResponse);
                 NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.loginFragment, true).build();
                 navController.navigate(R.id.homeFragment, null, navOptions);
+            }
+        });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                showLoader();
+            } else {
+                dismissLoader();
             }
         });
 
@@ -50,8 +57,8 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding, LoginViewM
 
     private boolean isValid() {
         boolean isValid = true;
-        String email = binding.getLogin().getEmail();
-        String password = binding.getLogin().getPassword();
+        String email = binding.getLogin().getEmail().trim();
+        String password = binding.getLogin().getPassword().trim();
         if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             isValid = false;
             binding.etEmail.setError("Enter valid email");
